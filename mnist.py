@@ -4,42 +4,46 @@ import csv
 import numpy as np
 from mnist_model import MnistModel
 
-train_size = 42000 #max 42k
+data_size = 420000 #max 42k
 test_size = 280 #max 28k
 dim = 784
 
 mm = MnistModel()
-tf_train_dataset, tf_train_labels = mm.load_data(train_size, dim)
+train_dataset, train_labels = mm.load_data(data_size, dim)
+
+train_size= 40000
+def split_data(X, Y, train_size):
+    m = X.shape[1]
+    permutation = list(np.random.permutation(m))
+    shuffled_X = X[:, permutation]
+    shuffled_Y = Y[:, permutation]
+    X_train = shuffled_X[:, :train_size]
+    Y_train = shuffled_Y[:, :train_size]
+    X_dev = shuffled_X[:, train_size+1:]
+    Y_dev = shuffled_Y[:, train_size+1:]
+    return X_train, Y_train, X_dev, Y_dev
+
+X_train, Y_train, X_dev, Y_dev = split_data(train_dataset.T, train_labels.T, train_size)
+
 
 parameters = mm.initialize_parameters()
 #X = tf.placeholder(tf.float32, shape=(784, None), name="X")
 X = tf.placeholder(tf.float32, shape=(dim, None), name='X')
 Y = tf.placeholder(tf.float32, shape=(10, None), name='Y')
 
-Z3 = mm.forward_propagation(tf.transpose(tf_train_dataset), parameters)
+Z3 = mm.forward_propagation(X, parameters)
 
-#weights = tf.Variable(
-#    tf.truncated_normal([28*28, 10]))
-#biases = tf.Variable(tf.zeros([10]))
-
-logits = tf.matmul(tf_train_dataset, weights) + biases
 
 loss = tf.reduce_mean(
-    tf.nn.softmax_cross_entropy_with_logits(labels=tf_train_labels, logits=tf.transpose(Z3)))
-#loss = tf.reduce_mean(
-#    tf.nn.softmax_cross_entropy_with_logits(labels=tf_train_labels, logits=logits))
+    tf.nn.softmax_cross_entropy_with_logits(labels=tf.transpose(Y), logits=tf.transpose(Z3)))
 
 optimizer = tf.train.AdamOptimizer(0.001).minimize(loss)
 
-train_prediction = tf.nn.softmax(logits)
+train_prediction = tf.nn.softmax(Z3)
 
 num_epochs = 15
-num_steps = 801
 minibatch_size = 128
 
-def accuracy(predictions, labels):
-    correct_prediction = tf.equal(tf.argmax(predictions),tf.argmax(labels))
-    return tf.reduce_mean(tf.cast(correct_prediction,"float")).eval()
 
 with tf.Session() as session:
     # This is a one-time operation which ensures the parameters get initialized as
@@ -47,25 +51,21 @@ with tf.Session() as session:
     # biases. 
     tf.global_variables_initializer().run()
     print('Initialized')
+    for epoch in range(num_epochs):
+        epoch_cost = 0.
+        num_minibatches = int(train_size / minibatch_size)
+        mini_batches = mm.random_mini_batches(X_train, Y_train, minibatch_size)
+        for step, mini_batch in enumerate(mini_batches):
+            # Run the computations. We tell .run() that we want to run the optimizer,
+            # and get the loss value and the training predictions returned as numpy
+            # arrays.
 
-    #for epoch in range(num_epochs):
-    #    epoch_cost = 0.
-    #    num_minibatches = int(train_size / minibatch_size)
-    #    minibatches = tf_train
-    for step in range(num_steps):
-        # Run the computations. We tell .run() that we want to run the optimizer,
-        # and get the loss value and the training predictions returned as numpy
-        # arrays.
-        _, l, predictions = session.run([optimizer, loss, train_prediction])
-        if (step % 100 == 0):
-            print('Loss at step %d: %f' % (step, l))
-            #print(accuracy(predictions, tf_train_labels))
-            print(accuracy(Z3, tf.transpose(tf_train_labels)))
-            #print(accuracy(tf.transpose(train_prediction), tf.transpose(tf_train_labels)))
-            # Calling .eval() on valid_prediction is basically like calling run(), but
-            # just to get that one numpy array. Note that it recomputes all its graph
-            # dependencies.
-            # print('Validation accuracy: %.1f%%' % accuracy(
-            #   valid_prediction.eval(), valid_labels))
-            # print('Test accuracy: %.1f%%' % accuracy(test_prediction.eval(), test_labels))
+            _, l, predictions = session.run([optimizer, loss, train_prediction], feed_dict={X: mini_batch[0], Y: mini_batch[1]})
+            if (step % 100 == 0):
+                print('Loss at step %d: %f' % (step, l))
+            # Calculate the correct predictions
 
+    correct_prediction = tf.equal(tf.argmax(Z3), tf.argmax(Y))
+    accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
+    print(accuracy.eval({X: X_train, Y: Y_train}))
+    print(accuracy.eval({X: X_dev, Y: Y_dev}))
