@@ -26,22 +26,23 @@ def split_data(X, Y, train_size):
 X_train, Y_train, X_dev, Y_dev = split_data(train_dataset.T, train_labels.T, train_size)
 
 
-parameters = mm.initialize_parameters([dim, 30, 20, 15, 10])
+parameters = mm.initialize_parameters([dim, 50, 20, 15, 10])
 #X = tf.placeholder(tf.float32, shape=(784, None), name="X")
 X = tf.placeholder(tf.float32, shape=(dim, None), name='X')
 Y = tf.placeholder(tf.float32, shape=(10, None), name='Y')
 
-Z3 = mm.forward_propagation(X, parameters)
+ZL = mm.forward_propagation(X, parameters)
+train_prediction = tf.nn.softmax(ZL)
 
-
-loss = tf.reduce_mean(
-    tf.nn.softmax_cross_entropy_with_logits(labels=tf.transpose(Y), logits=tf.transpose(Z3)))
+#loss = tf.reduce_mean(
+#    tf.nn.softmax_cross_entropy_with_logits(labels=tf.transpose(Y), logits=tf.transpose(ZL)))
+loss = mm.loss(tf.transpose(Y), tf.transpose(ZL), 0.01, parameters)
 
 optimizer = tf.train.AdamOptimizer(0.001).minimize(loss)
 
-train_prediction = tf.nn.softmax(Z3)
 
-num_epochs = 15
+
+num_epochs = 30
 minibatch_size = 128
 
 
@@ -65,7 +66,7 @@ with tf.Session() as session:
                 print('Loss at step %d: %f' % (step, l))
             # Calculate the correct predictions
 
-    correct_prediction = tf.equal(tf.argmax(Z3), tf.argmax(Y))
+    correct_prediction = tf.equal(tf.argmax(ZL), tf.argmax(Y))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
     print(accuracy.eval({X: X_train, Y: Y_train}))
     print(accuracy.eval({X: X_dev, Y: Y_dev}))

@@ -48,6 +48,17 @@ class MnistModel(object):
         Z = tf.add(tf.matmul(parameters['W' + str(L)], A), parameters['b' + str(L)])
         return Z
 
+    def loss(self, labels, logits, beta, parameters):
+
+        L = int(len(parameters) / 2)
+        l2reg = beta * sum([tf.nn.l2_loss(parameters['W' + str(l+1)]) for l in range(L)])
+        loss = tf.reduce_mean(
+        tf.nn.softmax_cross_entropy_with_logits(
+            labels=labels, logits=logits) + 
+            l2reg)
+        return loss
+
+
     def one_hot_matrix(self, labels, C):
         C = tf.constant(C, name='C')
         one_hot_matrix = tf.squeeze(tf.one_hot(labels, C, axis=1))
