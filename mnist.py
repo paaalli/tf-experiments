@@ -4,14 +4,14 @@ import csv
 import numpy as np
 from mnist_model import MnistModel
 
-data_size = 420000 #max 42k
+data_size = 42000 #max 42k
 test_size = 280 #max 28k
 dim = 784
 
 mm = MnistModel()
 train_dataset, train_labels = mm.load_data(data_size, dim)
 
-train_size= 40000
+train_size= int(0.9*data_size)
 def split_data(X, Y, train_size):
     m = X.shape[1]
     permutation = list(np.random.permutation(m))
@@ -26,7 +26,7 @@ def split_data(X, Y, train_size):
 X_train, Y_train, X_dev, Y_dev = split_data(train_dataset.T, train_labels.T, train_size)
 
 
-parameters = mm.initialize_parameters()
+parameters = mm.initialize_parameters([dim, 30, 20, 15, 10])
 #X = tf.placeholder(tf.float32, shape=(784, None), name="X")
 X = tf.placeholder(tf.float32, shape=(dim, None), name='X')
 Y = tf.placeholder(tf.float32, shape=(10, None), name='Y')
