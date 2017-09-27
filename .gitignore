@@ -2,3 +2,4 @@ test.csv
 test.csv
 train.csv
 __pycache__/mnist_model.cpython-36.pyc
+train.pickle

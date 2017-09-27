@@ -12,7 +12,7 @@ class MnistModel(object):
 
     def load_csv_or_pickle(self, csv_filename, pickle_filename, train_size, dim):
         if os.path.exists(pickle_filename):
-            ax = pickle.load(file(pickle_filename))
+            ax = pickle.load(open(pickle_filename, 'rb'))
             return ax[0], ax[1]
 
         data, labels = self.load_csv(csv_filename, train_size, dim)
