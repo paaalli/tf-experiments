@@ -3,15 +3,26 @@ import tensorflow as tf
 import csv
 import numpy as np
 import math
+import pickle
+import os
 
 class MnistModel(object):
     def __init__(self):
         super(MnistModel, self).__init__()
 
-    def load_data(self, train_size, dim):
+    def load_csv_or_pickle(self, csv_filename, pickle_filename, train_size, dim):
+        if os.path.exists(pickle_filename):
+            ax = pickle.load(file(pickle_filename))
+            return ax[0], ax[1]
+
+        data, labels = self.load_csv(csv_filename, train_size, dim)
+        self.save_pickle(pickle_filename, [data,labels])
+        return data, labels
+
+    def load_csv(self, filename, train_size, dim):
         vals = np.zeros((train_size,dim))
         labels = np.zeros((train_size,1))
-        with open("train.csv") as csvfile:
+        with open(filename) as csvfile:
             reader = csv.DictReader(csvfile)
             for r, row in enumerate(reader):
                 if (r >= train_size):
@@ -27,6 +38,21 @@ class MnistModel(object):
         train_dataset = vals
         train_labels = self.one_hot_matrix(labels, 10)
         return train_dataset, train_labels
+
+    def save_pickle(self, filename, ax):
+        if os.path.exists(filename):
+            # You may override by setting force=True.
+            print('%s already present - Skipping pickling.' % filename)
+            return
+
+        print('Pickling %s.' % filename)
+        try:
+            with open(filename, 'wb') as f:
+                pickle.dump(ax, f, pickle.HIGHEST_PROTOCOL)
+        except Exception as e:
+            print('Unable to save data to', filename, ':', e)
+
+        return
 
     def initialize_parameters(self, layers_dims):
         parameters = {}

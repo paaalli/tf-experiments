@@ -9,7 +9,7 @@ test_size = 280 #max 28k
 dim = 784
 
 mm = MnistModel()
-train_dataset, train_labels = mm.load_data(data_size, dim)
+train_dataset, train_labels = mm.load_csv_or_pickle("train.csv","train.pickle",data_size, dim)
 
 train_size= int(0.9*data_size)
 def split_data(X, Y, train_size):
