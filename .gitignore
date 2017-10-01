@@ -1,5 +1,6 @@
 test.csv
 test.csv
 train.csv
+mnist_model.pyc
 __pycache__/mnist_model.cpython-36.pyc
 train.pickle
