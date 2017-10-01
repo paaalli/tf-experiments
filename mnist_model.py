@@ -27,7 +27,7 @@ class MnistModel(object):
     def load_csv_or_pickle(self, csv_filename, pickle_filename, train_size, dim):
         if os.path.exists(pickle_filename):
             ax = pickle.load(open(pickle_filename, 'rb'))
-            return ax[0], ax[1]
+            return ax[0].T, ax[1].T
 
         data, labels = self.load_csv(csv_filename, train_size, dim)
         self.save_pickle(pickle_filename, [data,labels])
@@ -144,4 +144,4 @@ class MnistModel(object):
             mini_batch = (mini_batch_X, mini_batch_Y)
             mini_batches.append(mini_batch)
 
-        return mini_batches
+        return np.array(mini_batches)
