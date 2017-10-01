@@ -12,10 +12,6 @@ lambd = 0.01
 #learning_rate = 0.001
 mm = MnistModel()
 data_X, data_Y = mm.load_csv_or_pickle("train.csv","train.pickle",data_size, dim)
-print(type(data_X), type(data_Y))
-print("data_set",data_X, data_X.shape)
-print("data_set", data_Y, data_Y.shape)
-
 
 
 dev_size = 2000
@@ -46,7 +42,6 @@ def model(X_train, Y_train, X_dev, Y_dev, learning_rate, lambd, layers_dims):
     train_prediction = tf.nn.softmax(ZL)
     loss = mm.loss(tf.transpose(Y), tf.transpose(ZL), lambd, parameters)
     optimizer = tf.train.AdamOptimizer(learning_rate).minimize(loss)
-
 
     with tf.Session() as session:
         # This is a one-time operation which ensures the parameters get initialized as
