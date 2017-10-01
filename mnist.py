@@ -11,17 +11,17 @@ dim = 784
 lambd = 0.01
 #learning_rate = 0.001
 mm = MnistModel()
-train_dataset, train_labels = mm.load_csv_or_pickle("train.csv","train.pickle",data_size, dim)
-print(type(train_dataset), type(train_labels))
-print(train_dataset, train_dataset.shape)
-print(train_labels, train_labels.shape)
+data_X, data_Y = mm.load_csv_or_pickle("train.csv","train.pickle",data_size, dim)
+print(type(data_X), type(data_Y))
+print("data_set",data_X, data_X.shape)
+print("data_set", data_Y, data_Y.shape)
 
 
 
 dev_size = 2000
 test_size = 2000
-X_train, Y_train, X_dev, Y_dev, X_test, Y_test = mm.split_data(train_dataset.T,
-                                                            train_labels.T, dev_size, test_size)
+X_train, Y_train, X_dev, Y_dev, X_test, Y_test = mm.split_data(data_X,
+                                                            data_Y, dev_size, test_size)
 train_size = data_size - dev_size - test_size
 print(X_train.shape,X_dev.shape, X_test.shape)
 
