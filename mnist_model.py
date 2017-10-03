@@ -51,7 +51,7 @@ class MnistModel(object):
 
         train_dataset = vals
         train_labels = self.one_hot_matrix(labels, 10)
-        return train_dataset, train_labels
+        return train_dataset.T, train_labels.T
 
     def save_pickle(self, filename, ax):
         if os.path.exists(filename):
