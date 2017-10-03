@@ -11,26 +11,13 @@ dim = 784
 lambd = 0.01
 #learning_rate = 0.001
 mm = MnistModel()
-train_dataset, train_labels = mm.load_csv_or_pickle("train.csv","train.pickle",data_size, dim)
+data_X, data_Y = mm.load_csv_or_pickle("train.csv","train.pickle",data_size, dim)
 
-def split_data(X, Y, dev_size, test_size):
-    num_examples = X.shape[1]
-    train_size = num_examples - test_size - dev_size
-    permutation = list(np.random.permutation(num_examples))
-    shuffled_X = X[:, permutation]
-    shuffled_Y = Y[:, permutation]
-    X_train = shuffled_X[:, :train_size]
-    Y_train = shuffled_Y[:, :train_size]
-    X_dev = shuffled_X[:, train_size:train_size+dev_size]
-    Y_dev = shuffled_Y[:, train_size:train_size+dev_size]
-    X_test = shuffled_X[:, train_size+dev_size:]
-    Y_test = shuffled_Y[:, train_size+dev_size:]
-    return X_train, Y_train, X_dev, Y_dev, X_test, Y_test
 
 dev_size = 2000
 test_size = 2000
-X_train, Y_train, X_dev, Y_dev, X_test, Y_test = split_data(train_dataset.T, 
-                                                            train_labels.T, dev_size, test_size)
+X_train, Y_train, X_dev, Y_dev, X_test, Y_test = mm.split_data(data_X,
+                                                            data_Y, dev_size, test_size)
 train_size = data_size - dev_size - test_size
 print(X_train.shape,X_dev.shape, X_test.shape)
 
@@ -47,7 +34,7 @@ minibatch_size = 128
 def model(X_train, Y_train, X_dev, Y_dev, learning_rate, lambd, layers_dims):
 
     ops.reset_default_graph()
-    
+
     X = tf.placeholder(tf.float32, shape=(dim, None), name='X')
     Y = tf.placeholder(tf.float32, shape=(10, None), name='Y')
     parameters = mm.initialize_parameters(layers_dims)
@@ -56,11 +43,10 @@ def model(X_train, Y_train, X_dev, Y_dev, learning_rate, lambd, layers_dims):
     loss = mm.loss(tf.transpose(Y), tf.transpose(ZL), lambd, parameters)
     optimizer = tf.train.AdamOptimizer(learning_rate).minimize(loss)
 
-
     with tf.Session() as session:
         # This is a one-time operation which ensures the parameters get initialized as
         # we described in the graph: random weights for the matrix, zeros for the
-        # biases. 
+        # biases.
         tf.global_variables_initializer().run()
         print('Initialized')
         for epoch in range(num_epochs):
