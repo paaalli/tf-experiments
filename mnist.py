@@ -67,7 +67,6 @@ def model(X_train, Y_train, X_dev, Y_dev, learning_rate, lambd, layers_dims):
     # Save the loss on training and dev set after each epoch, as well as the dev accuracy.
     loss_train = []
     loss_dev = []
-    dev_accs = []
 
     with tf.Session() as session:
         # This is a one-time operation which ensures the parameters get initialized as
@@ -91,8 +90,7 @@ def model(X_train, Y_train, X_dev, Y_dev, learning_rate, lambd, layers_dims):
                 # Calculate the correct predictions
             loss_train.append(str(session.run(loss, {X: X_train, Y: Y_train})))
             loss_dev.append(str(session.run(loss, {X: X_dev, Y: Y_dev})))
-            dev_accs.append(accuracy.eval({X: X_dev, Y: Y_dev}))
-            print('----- epoch: {0} -----'.format(epoch+1))
+            print('----- epoch: {0} -----'.format(epoch + 1))
             print('Loss train = ' + str(session.run(loss, {X: X_train, Y: Y_train})))
             print('Loss dev = ' + str(session.run(loss, {X: X_dev, Y: Y_dev})))
             print('Accuracy train ' + str(accuracy.eval({X: X_train, Y: Y_train})))
@@ -102,7 +100,7 @@ def model(X_train, Y_train, X_dev, Y_dev, learning_rate, lambd, layers_dims):
         dev_accuracy = accuracy.eval({X: X_dev, Y: Y_dev})
         print(accuracy.eval({X: X_train, Y: Y_train}))
         print(accuracy.eval({X: X_dev, Y: Y_dev}))
-        mm.plot_results(loss_train, loss_dev, dev_accs, learning_rate, train_accuracy, dev_accuracy)
+        mm.plot_results(loss_train, loss_dev, learning_rate, train_accuracy, dev_accuracy)
 
 
 for learning_rate in [0.001, 0.0015, 0.0021]:

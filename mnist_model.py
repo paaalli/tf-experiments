@@ -136,20 +136,16 @@ class MnistModel(object):
 
         return mini_batches
 
-    def plot_results(self, loss_train, loss_dev, dev_accs, learning_rate, train_accuracy, dev_accuracy):
+    def plot_results(self, loss_train, loss_dev, learning_rate, train_accuracy, dev_accuracy):
 
         _, ax1 = plt.subplots(figsize=(10, 10))
-        ax2 = ax1.twinx()
         iterations = range(1, len(loss_train) + 1)
-        ax1.plot(iterations, loss_train, label='train')
-        ax1.plot(iterations, loss_dev, label='dev')
-        ax2.plot(iterations, dev_accs, 'r', label='dev')
-        ax1.set_xlabel('iteration')
+        ax1.plot(iterations, loss_train, label='train loss')
+        ax1.plot(iterations, loss_dev, label='dev loss')
+        ax1.set_xlabel('epoch')
         ax1.set_ylabel('cross entropy loss')
-        ax2.set_ylabel('dev accuracy')
         plt.title('Learning rate: ' + str(learning_rate) + '\n Training accuracy: ' + str(
             train_accuracy) + '\n Dev accuracy: ' + str(dev_accuracy))
-        ax1.legend(loc='lower left')
-        ax2.legend(loc='upper left')
+        ax1.legend(loc='upper right')
         plt.savefig("loss_function.png")
         plt.show()
