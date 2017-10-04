@@ -148,4 +148,3 @@ class MnistModel(object):
             train_accuracy) + '\n Dev accuracy: ' + str(dev_accuracy))
         ax1.legend(loc='upper right')
         #plt.savefig("loss_function.png")
-        plt.show(block=False)
