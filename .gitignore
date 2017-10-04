@@ -5,3 +5,4 @@ __pycache__/mnist_model.cpython-36.pyc
 __pycache__/
 train.pickle
 .idea
+loss_function.png

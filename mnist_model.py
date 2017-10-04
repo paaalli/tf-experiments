@@ -147,4 +147,4 @@ class MnistModel(object):
         plt.title('Learning rate: ' + str(learning_rate) + '\n Training accuracy: ' + str(
             train_accuracy) + '\n Dev accuracy: ' + str(dev_accuracy))
         ax1.legend(loc='upper right')
-        #plt.savefig("loss_function.png")
+
