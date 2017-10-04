@@ -39,7 +39,7 @@ train_size = data_size - dev_size - test_size
 print(X_train.shape, X_dev.shape, X_test.shape)
 
 layers_dims = [dim, 50, 30, 20, 10]
-num_epochs = 20
+num_epochs = 2
 minibatch_size = 128
 
 
@@ -106,3 +106,4 @@ def model(X_train, Y_train, X_dev, Y_dev, learning_rate, lambd, layers_dims):
 for learning_rate in [0.001, 0.0015, 0.0021]:
     print("Learning rate is {}".format(learning_rate))
     model(X_train, Y_train, X_dev, Y_dev, learning_rate, lambd, layers_dims)
+plt.show()
