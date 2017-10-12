@@ -6,3 +6,6 @@ __pycache__/
 train.pickle
 .idea
 loss_function.png
+Atlases1.1.zip
+Atlases1.1/TBI_atlas/atlas6_T2.nii
+*.nii
