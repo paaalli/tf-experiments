@@ -15,7 +15,7 @@ lambd = 0.01
 mm = MnistModel()
 train_dataset, train_labels = mm.load_csv_or_pickle("train.csv", "train.pickle", data_size, dim)
 
-
+"""
 def split_data(X, Y, dev_size, test_size):
     num_examples = X.shape[1]
     train_size = num_examples - test_size - dev_size
@@ -29,11 +29,11 @@ def split_data(X, Y, dev_size, test_size):
     X_test = shuffled_X[:, train_size + dev_size:]
     Y_test = shuffled_Y[:, train_size + dev_size:]
     return X_train, Y_train, X_dev, Y_dev, X_test, Y_test
-
+"""
 
 dev_size = 2000
 test_size = 2000
-X_train, Y_train, X_dev, Y_dev, X_test, Y_test = split_data(train_dataset.T,
+X_train, Y_train, X_dev, Y_dev, X_test, Y_test = mm.split_data(train_dataset.T,
                                                             train_labels.T, dev_size, test_size)
 train_size = data_size - dev_size - test_size
 print(X_train.shape, X_dev.shape, X_test.shape)

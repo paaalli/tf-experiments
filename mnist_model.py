@@ -56,6 +56,20 @@ class MnistModel(object):
 
         return
 
+    def split_data(self, X, Y, dev_size, test_size):
+        num_examples = X.shape[1]
+        train_size = num_examples - test_size - dev_size
+        permutation = list(np.random.permutation(num_examples))
+        shuffled_X = X[:, permutation]
+        shuffled_Y = Y[:, permutation]
+        X_train = shuffled_X[:, :train_size]
+        Y_train = shuffled_Y[:, :train_size]
+        X_dev = shuffled_X[:, train_size:train_size + dev_size]
+        Y_dev = shuffled_Y[:, train_size:train_size + dev_size]
+        X_test = shuffled_X[:, train_size + dev_size:]
+        Y_test = shuffled_Y[:, train_size + dev_size:]
+        return X_train, Y_train, X_dev, Y_dev, X_test, Y_test
+
     def initialize_parameters(self, layers_dims):
         parameters = {}
         for l in range(1, len(layers_dims)):
