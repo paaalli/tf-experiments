@@ -20,9 +20,10 @@ mask = load_nifti('atlas1_brainmask.nii')
 t1 = load_nifti('atlas1_T1.nii')
 t2 = load_nifti('atlas1_T2.nii')
 
-t1_patches = image.extract_patches_2d(t1[:,:,100], (5, 5))
-t2_patches = image.extract_patches_2d(t2[:,:,100], (5, 5))
-mask_patches = image.extract_patches_2d(mask[:,:,100], (5, 5))
+patch_size = (7, 7)
+t1_patches = image.extract_patches_2d(t1[:,:,100], patch_size)
+t2_patches = image.extract_patches_2d(t2[:,:,100], patch_size)
+mask_patches = image.extract_patches_2d(mask[:,:,100], patch_size)
 
 head_mask = np.ones(len(t1_patches), dtype=bool)
 head_indexes = []
@@ -44,7 +45,8 @@ Y = np.reshape(mask_patches_train, (mask_patches_train.shape[0], -1)).T
 
 #model = load_model('25patchmodel')
 #model = load_model('25patchmodel_T1T2')
-
+model = load_model('49patchmodel_T1T2')
+"""
 X_train, Y_train, X_dev, Y_dev, X_test, Y_test = split_data(X, Y, 1000, 1000)
 print('X_train: {}, Y_train: {}, X_dev: {}, Y_dev: {}, X_test: {}, Y_test: {}'.format(
     X_train.shape, Y_train.shape, X_dev.shape, Y_dev.shape, X_test.shape, Y_test.shape))
@@ -62,26 +64,29 @@ model.compile(optimizer='adam',
 
 labels = [Y_train[i, :] for i in range(Y_train.shape[0])]
 model.fit(X_train.T, labels, epochs=50, batch_size=128)  # starts training
-model.save('25patchmodel_T1T2')
+model.save('49patchmodel_T1T2')
 dev_labels = [Y_dev[i, :] for i in range(Y_train.shape[0])]
 score = model.evaluate(X_dev.T, dev_labels, batch_size=128)
 print(score)
-
+"""
 t1_features = np.reshape(t1_patches, (t1_patches.shape[0], -1)).T
 t2_features = np.reshape(t2_patches, (t2_patches.shape[0], -1)).T
 input_image = np.concatenate((t1_features, t2_features), 0).T
 #input_image = np.reshape(t1_patches, (t1_patches.shape[0], -1))
 new_mask_patches = np.zeros(t1_patches.shape)
 for i, patch in enumerate(input_image):
-    output = model.predict(patch.reshape((1, 50)))
+    output = model.predict(patch.reshape((1, patch_size[0]**2*2))) # Input reshaped to vector containing patch_size[0]**2 times num modalities
     output_restructured = np.asarray(np.squeeze(output))
-    new_patch = np.round(np.reshape(output_restructured, (5,5)))
+    new_patch = np.reshape(output_restructured, patch_size)
     new_mask_patches[i, :, :] += new_patch
 
 new_mask = image.reconstruct_from_patches_2d(new_mask_patches, t1[:, :, 100].shape)
 plt.figure(1)
 plt.imshow(new_mask)
 plt.figure(2)
+plt.imshow(mask[:, :, 100], cmap='gray')
+plt.imshow(new_mask, cmap='jet', alpha=0.5)
+plt.figure(3)
 plt.imshow(t1[:, :, 100])
 plt.show()
 set_trace()
